@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import apiClient from '../services/api';
-
+import apiClient from '../services/api'
 
 const message = ref('')
+const error = ref('')
+const loading = ref(true)
 
 onMounted(async () => {
-  message.value = await apiClient.getHello()
+  try {
+    message.value = await apiClient.getHello()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Failed to fetch'
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 
 <template>
-  <h1>{{ message }}</h1>
+  <p v-if="loading">Loading…</p>
+  <p v-else-if="error">{{ error }}</p>
+  <h1 v-else>{{ message }}</h1>
 </template>
