@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import { useAuth } from '../auth/useAuth'
+import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
+import HomeView from '../views/HomeView.vue';
+import { useAuth } from '../auth/useAuth';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -10,20 +10,20 @@ const routes: RouteRecordRaw[] = [
     component: HomeView,
     meta: { requiresAuth: true },
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-})
+});
 
 router.beforeEach((to) => {
-  const { isAuthenticated, login } = useAuth()
+  const { isAuthenticated, login } = useAuth();
 
   if (to.meta.requiresAuth && !isAuthenticated.value) {
-    login()
-    return false
+    login();
+    return false;
   }
-})
+});
 
-export default router
+export default router;

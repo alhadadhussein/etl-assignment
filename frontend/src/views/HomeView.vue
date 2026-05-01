@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import apiClient from '../services/api'
+import UploadView from './UploadView.vue'
 
 const message = ref('')
 const error = ref('')
@@ -18,7 +19,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <p v-if="loading">Loading…</p>
-  <p v-else-if="error">{{ error }}</p>
-  <h1 v-else>{{ message }}</h1>
+  <v-progress-circular v-if="loading" indeterminate color="primary" />
+  <v-alert v-else-if="error" type="error">{{ error }}</v-alert>
+  <h1 v-else class="text-h5 mb-4">{{ message }}</h1>
+
+  <UploadView />
 </template>

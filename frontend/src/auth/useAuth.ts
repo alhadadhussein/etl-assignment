@@ -8,7 +8,7 @@ const account = ref<AccountInfo | null>(null)
 
 export function useAuth() {
   const isAuthenticated = computed(() => !!account.value)
-  const user = computed(() => account.value?.name ?? '')
+  const userName = computed(() => account.value?.name ?? '')
 
   //For the single-tenant, single-user app, we can simply set the first account as active.
   const setActiveAccount = () => {
@@ -52,5 +52,5 @@ export function useAuth() {
     }
   }
 
-  return { isAuthenticated, user, login, logout, getToken, setActiveAccount }
+  return { isAuthenticated, userName, login, logout, getToken, setActiveAccount }
 }
