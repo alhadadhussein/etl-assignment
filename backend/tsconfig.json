@@ -18,7 +18,7 @@
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
-    "types": ["multer"],
+    "types": ["multer", "jest"],
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false
   }

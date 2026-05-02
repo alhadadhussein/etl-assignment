@@ -6,7 +6,7 @@ import type { AccountInfo } from '@azure/msal-browser'
 
 const account = ref<AccountInfo | null>(null)
 
-export function useAuth() {
+export const useAuth = () => {
   const isAuthenticated = computed(() => !!account.value)
   const userName = computed(() => account.value?.name ?? '')
 
