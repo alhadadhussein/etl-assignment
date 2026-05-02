@@ -20,9 +20,12 @@ export class UploadController {
     @Req() req: Request,
   ): Promise<{ message: string; fileId: string }> {
     if (!file) throw new BadRequestException('Invalid file: no file uploaded.');
-    this.validationService.validate(file);
 
     const userId = (req.user as { userId: string }).userId;
+    await this.fileProcessingService.uploadRaw(file.buffer, userId, file.originalname);
+
+    this.validationService.validate(file);
+
     const fileId = await this.fileProcessingService.processFile(file.buffer, userId);
 
     return { message: 'File uploaded and validated successfully.', fileId };

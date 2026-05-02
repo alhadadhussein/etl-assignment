@@ -8,16 +8,29 @@ import { BlobStorageService } from '../storage/blob-storage.service';
 export class FileProcessingService {
   private readonly logger = new Logger(FileProcessingService.name);
 
-  private readonly CONTAINER = 'processed-files';
+  private readonly RAW_CONTAINER = 'raw-uploads';
+  private readonly PROCESSED_CONTAINER = 'processed-files';
 
   constructor(private readonly blobStorageService: BlobStorageService) {}
+
+  async uploadRaw(data: Buffer, userId: string, originalFilename: string): Promise<void> {
+    const timestamp = new Date().toISOString();
+    const blobPath = `${userId}/${timestamp}_${originalFilename}`;
+
+    try {
+      await this.blobStorageService.upload(data, this.RAW_CONTAINER, blobPath);
+    } catch (error) {
+      this.logger.error('Failed to upload raw file to blob storage', error);
+      throw new InternalServerErrorException('Failed to upload raw file to blob storage. Please try again later.');
+    }
+  }
 
   async processFile(data: Buffer, userId: string): Promise<string> {
     const fileId = this.generateFileId(data);
     const processedFile = this.createProcessedFile(data, fileId);
 
     try {
-      await this.blobStorageService.upload(processedFile, this.CONTAINER, `${userId}/${fileId}.csv`);
+      await this.blobStorageService.upload(processedFile, this.PROCESSED_CONTAINER, `${userId}/${fileId}.csv`);
     } catch (error) {
       this.logger.error('Failed to upload processed file to blob storage', error);
       throw new InternalServerErrorException(
