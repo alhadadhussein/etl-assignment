@@ -49,7 +49,10 @@ describe('UploadController (e2e)', () => {
         .post('/upload')
         .attach('file', Buffer.from(VALID_CSV), { filename: 'sites.csv', contentType: 'text/csv' })
         .expect(201)
-        .expect({ message: 'File uploaded and validated successfully.' }));
+        .expect({
+          message: 'File uploaded and validated successfully.',
+          fileId: 'b40d56b8feeb874d4f7950c01b1301dc1144424981c8484457a88e2e746b8cfe',
+        }));
 
     it('missing required columns returns 400', () =>
       request(app.getHttpServer())
