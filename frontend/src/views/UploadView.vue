@@ -3,15 +3,15 @@ import { ref } from 'vue';
 import uploadService from '../services/uploadService';
 import { useSnackbar } from '../composables/useSnackbar';
 
-const file = ref<File | null>(null);
+const file = ref<File | undefined>();
 const loading = ref(false);
 const { show: showSnackbar } = useSnackbar();
 
-const onFileChange = (value: File | File[] | null) => {
+const onFileChange = (value: File | File[] | undefined) => {
   if (Array.isArray(value)) {
-    file.value = value[0] ?? null;
+    file.value = value[0] ?? undefined;
   } else {
-    file.value = value ?? null;
+    file.value = value ?? undefined;
   }
 };
 
@@ -37,7 +37,7 @@ const upload = async () => {
   try {
     const { message, fileId } = await uploadService.uploadCsv(file.value);
     showSnackbar(`${message}\nFile ID: ${fileId}`, 'success');
-    file.value = null;
+    file.value = undefined;
   } catch (e) {
     showSnackbar(e instanceof Error ? e.message : 'Upload failed.', 'error');
   } finally {
@@ -53,6 +53,7 @@ const upload = async () => {
         <v-card-title class="text-h6">Upload CSV</v-card-title>
         <v-card-text>
           <v-file-upload
+            :model-value="file"
             accept=".csv"
             :multiple="false"
             density="default"
