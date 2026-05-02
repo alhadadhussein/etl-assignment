@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAuth } from './auth/useAuth';
+import AppSnackbar from './components/AppSnackbar.vue';
 
 const { userName, logout } = useAuth();
 </script>
@@ -23,6 +24,7 @@ const { userName, logout } = useAuth();
         <router-view />
       </v-container>
     </v-main>
+    <AppSnackbar />
   </v-app>
 </template>
 

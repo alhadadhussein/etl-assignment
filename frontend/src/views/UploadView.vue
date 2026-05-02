@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import apiClient from '../services/api';
+import uploadService from '../services/uploadService';
+import { useSnackbar } from '../composables/useSnackbar';
 
 const file = ref<File | null>(null);
 const loading = ref(false);
-const successMessage = ref('');
-const errorMessage = ref('');
+const { show: showSnackbar } = useSnackbar();
 
 const onFileChange = (value: File | File[] | null) => {
-  successMessage.value = '';
-  errorMessage.value = '';
   if (Array.isArray(value)) {
     file.value = value[0] ?? null;
   } else {
@@ -24,26 +22,24 @@ const validateFile = (f: File): string | null => {
 
 const upload = async () => {
   if (!file.value) {
-    errorMessage.value = 'Please select a .csv file.';
+    showSnackbar('Please select a .csv file.', 'error');
     return;
   }
 
   const validationError = validateFile(file.value);
   if (validationError) {
-    errorMessage.value = validationError;
+    showSnackbar(validationError, 'error');
     return;
   }
 
   loading.value = true;
-  successMessage.value = '';
-  errorMessage.value = '';
 
   try {
-    await apiClient.uploadCsv(file.value);
-    successMessage.value = 'File uploaded successfully!';
+    const { message, fileId } = await uploadService.uploadCsv(file.value);
+    showSnackbar(`${message}\nFile ID: ${fileId}`, 'success');
     file.value = null;
   } catch (e) {
-    errorMessage.value = e instanceof Error ? e.message : 'Upload failed.';
+    showSnackbar(e instanceof Error ? e.message : 'Upload failed.', 'error');
   } finally {
     loading.value = false;
   }
@@ -78,13 +74,6 @@ const upload = async () => {
             Upload
           </v-btn>
         </v-card-actions>
-
-        <v-alert v-if="successMessage" type="success" class="mx-4 mb-4" closable>
-          {{ successMessage }}
-        </v-alert>
-        <v-alert v-if="errorMessage" type="error" class="mx-4 mb-4" closable>
-          {{ errorMessage }}
-        </v-alert>
       </v-card>
     </v-col>
   </v-row>
