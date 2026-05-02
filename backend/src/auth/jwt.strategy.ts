@@ -1,17 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { passportJwtSecret } from 'jwks-rsa';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
-    const tenantId = process.env.ENTRA_TENANT_ID;
-    const clientId = process.env.ENTRA_CLIENT_ID;
-
-    if (!tenantId || !clientId) {
-      throw new Error('ENTRA_TENANT_ID and ENTRA_CLIENT_ID must be set');
-    }
+  constructor(configService: ConfigService) {
+    const tenantId = configService.getOrThrow<string>('ENTRA_TENANT_ID');
+    const clientId = configService.getOrThrow<string>('ENTRA_CLIENT_ID');
 
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
