@@ -7,7 +7,7 @@ const loading = ref(false);
 const successMessage = ref('');
 const errorMessage = ref('');
 
-function onFileChange(value: File | File[] | null) {
+const onFileChange = (value: File | File[] | null) => {
   successMessage.value = '';
   errorMessage.value = '';
   if (Array.isArray(value)) {
@@ -15,20 +15,22 @@ function onFileChange(value: File | File[] | null) {
   } else {
     file.value = value ?? null;
   }
-}
+};
 
-async function upload() {
+const validateFile = (f: File): string | null => {
+  if (!f.name.endsWith('.csv')) return 'Only .csv files are allowed.';
+  return null;
+};
+
+const upload = async () => {
   if (!file.value) {
     errorMessage.value = 'Please select a .csv file.';
     return;
   }
 
-  const validMimeTypes = ['text/csv'];
-  const hasValidExtension = file.value.name.endsWith('.csv');
-  const hasValidMime = !file.value.type || validMimeTypes.includes(file.value.type);
-
-  if (!hasValidExtension && !hasValidMime) {
-    errorMessage.value = 'Only .csv files are allowed.';
+  const validationError = validateFile(file.value);
+  if (validationError) {
+    errorMessage.value = validationError;
     return;
   }
 
@@ -45,7 +47,7 @@ async function upload() {
   } finally {
     loading.value = false;
   }
-}
+};
 </script>
 
 <template>
