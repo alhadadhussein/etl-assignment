@@ -18,7 +18,7 @@ export class UploadController {
     if (!file) throw new BadRequestException('Invalid file: no file uploaded.');
     this.validationService.validate(file);
 
-    const fileId = this.fileProcessingService.generateFileId(file.buffer);
+    const fileId = this.fileProcessingService.processFile(file.buffer);
 
     return { message: 'File uploaded and validated successfully.', fileId };
   }
