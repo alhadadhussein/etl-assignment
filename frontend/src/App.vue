@@ -11,13 +11,7 @@ const { userName, logout } = useAuth();
       <v-app-bar-title>IKEA</v-app-bar-title>
       <v-spacer />
       <span class="text-body-2 mr-3">{{ userName }}</span>
-      <v-btn
-        variant="outlined"
-        size="small"
-        prepend-icon="mdi-logout"
-        @click="logout"
-        >Sign out</v-btn
-      >
+      <v-btn variant="outlined" size="small" prepend-icon="mdi-logout" @click="logout">Sign out</v-btn>
     </v-app-bar>
     <v-main class="app-main">
       <v-container>

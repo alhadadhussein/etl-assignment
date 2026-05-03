@@ -35,8 +35,8 @@ const upload = async () => {
   loading.value = true;
 
   try {
-    const { message, fileId } = await uploadService.uploadCsv(file.value);
-    showSnackbar(`${message}\nFile ID: ${fileId}`, 'success');
+    const { message } = await uploadService.uploadCsv(file.value);
+    showSnackbar(message, 'success');
     file.value = undefined;
   } catch (e) {
     showSnackbar(e instanceof Error ? e.message : 'Upload failed.', 'error');
@@ -47,7 +47,7 @@ const upload = async () => {
 </script>
 
 <template>
-  <v-row justify="center" class="mt-6">
+  <v-row justify="center" class="mt-8">
     <v-col cols="12" sm="8" md="6" lg="5">
       <v-card elevation="2" rounded="lg">
         <v-card-title class="text-h6">Upload CSV</v-card-title>

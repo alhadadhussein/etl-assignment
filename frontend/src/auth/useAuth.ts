@@ -1,36 +1,36 @@
-import { ref, computed } from 'vue'
-import { msalInstance } from './msalInstance'
-import { loginRequest } from './msalConfig'
-import { InteractionRequiredAuthError } from '@azure/msal-browser'
-import type { AccountInfo } from '@azure/msal-browser'
+import { ref, computed } from 'vue';
+import { msalInstance } from './msalInstance';
+import { loginRequest } from './msalConfig';
+import { InteractionRequiredAuthError } from '@azure/msal-browser';
+import type { AccountInfo } from '@azure/msal-browser';
 
-const account = ref<AccountInfo | null>(null)
+const account = ref<AccountInfo | null>(null);
 
 export const useAuth = () => {
-  const isAuthenticated = computed(() => !!account.value)
-  const userName = computed(() => account.value?.name ?? '')
+  const isAuthenticated = computed(() => account.value !== null);
+  const userName = computed(() => account.value?.name ?? '');
 
   //For the single-tenant, single-user app, we can simply set the first account as active.
   const setActiveAccount = () => {
-    const accounts = msalInstance.getAllAccounts()
+    const accounts = msalInstance.getAllAccounts();
     if (accounts.length > 0) {
-      msalInstance.setActiveAccount(accounts[0])
-      account.value = accounts[0]
+      msalInstance.setActiveAccount(accounts[0]);
+      account.value = accounts[0];
     }
-  }
+  };
 
   const login = () => {
-    msalInstance.loginRedirect(loginRequest)
-  }
+    msalInstance.loginRedirect(loginRequest);
+  };
 
   const logout = () => {
-    msalInstance.logoutRedirect()
-  }
+    msalInstance.logoutRedirect();
+  };
 
   const getToken = async (): Promise<string> => {
-    const activeAccount = msalInstance.getActiveAccount()
+    const activeAccount = msalInstance.getActiveAccount();
     if (!activeAccount) {
-      throw new Error('No active account')
+      throw new Error('No active account');
     }
 
     try {
@@ -38,19 +38,19 @@ export const useAuth = () => {
       const response = await msalInstance.acquireTokenSilent({
         ...loginRequest,
         account: activeAccount,
-      })
-      return response.accessToken
+      });
+      return response.accessToken;
     } catch (error) {
       // If silent fails for example if refresh token is expired, redirect to login page
       if (error instanceof InteractionRequiredAuthError) {
         msalInstance.acquireTokenRedirect({
           ...loginRequest,
           account: activeAccount,
-        })
+        });
       }
-      throw error
+      throw error;
     }
-  }
+  };
 
-  return { isAuthenticated, userName, login, logout, getToken, setActiveAccount }
-}
+  return { isAuthenticated, userName, login, logout, getToken, setActiveAccount };
+};
