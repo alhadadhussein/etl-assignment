@@ -17,27 +17,32 @@ export class FileProcessingService {
     const timestamp = new Date().toISOString();
     const blobPath = `${userId}/${timestamp}_${originalFilename}`;
 
+    this.logger.log(`Uploading raw file for user ${userId} — path: ${blobPath}`);
+
     try {
       await this.blobStorageService.upload(data, this.RAW_CONTAINER, blobPath);
     } catch (error) {
-      this.logger.error('Failed to upload raw file to blob storage', error);
+      this.logger.error(`Failed to upload raw file for user ${userId}`, error);
       throw new InternalServerErrorException('Failed to upload raw file to blob storage. Please try again later.');
     }
   }
 
   async processFile(data: Buffer, userId: string): Promise<string> {
     const fileId = this.generateFileId(data);
+    this.logger.log(`Processing file for user ${userId} — fileId: ${fileId}`);
+
     const processedFile = this.createProcessedFile(data, fileId);
 
     try {
       await this.blobStorageService.upload(processedFile, this.PROCESSED_CONTAINER, `${userId}/${fileId}.csv`);
     } catch (error) {
-      this.logger.error('Failed to upload processed file to blob storage', error);
+      this.logger.error(`Failed to upload processed file for user ${userId} — fileId: ${fileId}`, error);
       throw new InternalServerErrorException(
         'Failed to upload processed file to blob storage. Please try again later.',
       );
     }
 
+    this.logger.log(`File processed successfully for user ${userId} — fileId: ${fileId}`);
     return fileId;
   }
 

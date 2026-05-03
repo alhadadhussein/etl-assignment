@@ -1,23 +1,28 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { parse } from 'csv-parse/sync';
 
 const REQUIRED_COLUMNS = ['site_id', 'site_name', 'country', 'city', 'floor_area_sqm'];
 
 @Injectable()
 export class UploadValidationService {
+  private readonly logger = new Logger(UploadValidationService.name);
+
   validate(file: Express.Multer.File): void {
     this.checkType(file);
     const headers = this.checkStructure(file);
     this.checkRequiredColumns(headers);
+    this.logger.log(`Validation passed for file: ${file.originalname}`);
   }
 
   // Validates the file type and MIME type to ensure it's a CSV file
   private checkType(file: Express.Multer.File): void {
     if (!file.originalname.endsWith('.csv')) {
+      this.logger.warn(`Validation failed — bad extension: ${file.originalname}`);
       throw new BadRequestException('Invalid file: extension must be .csv.');
     }
 
     if (file.mimetype !== 'text/csv') {
+      this.logger.warn(`Validation failed — bad MIME type: ${file.mimetype}`);
       throw new BadRequestException(`Invalid file: MIME type must be text/csv, received "${file.mimetype}".`);
     }
   }
@@ -29,10 +34,12 @@ export class UploadValidationService {
     try {
       records = parse(file.buffer, { columns: true, skip_empty_lines: true });
     } catch {
+      this.logger.warn(`Validation failed — could not parse CSV: ${file.originalname}`);
       throw new BadRequestException('Invalid file: could not be parsed as CSV.');
     }
 
     if (records.length === 0) {
+      this.logger.warn(`Validation failed — no data rows: ${file.originalname}`);
       throw new BadRequestException('Invalid file: must contain a header row and at least one data row.');
     }
 
@@ -45,6 +52,7 @@ export class UploadValidationService {
     const missing = REQUIRED_COLUMNS.filter((col) => !normalised.includes(col));
 
     if (missing.length > 0) {
+      this.logger.warn(`Validation failed — missing columns: ${missing.join(', ')}`);
       throw new BadRequestException(`Invalid file: missing required column(s): ${missing.join(', ')}.`);
     }
   }
