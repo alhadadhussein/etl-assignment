@@ -19,9 +19,7 @@ jobs:
         uses: actions/github-script@v7
         id: idtoken
         with:
-          script: |
-            const core = require('@actions/core')
-            return await core.getIDToken()
+          script: return await core.getIDToken()
           result-encoding: string
 
       - name: Build and deploy to Azure Static Web Apps
