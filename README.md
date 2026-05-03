@@ -1,7 +1,3 @@
-# IKEA Assignment
-
-A monorepo with a Vue 3 frontend and NestJS backend.
-
 ## Getting Started
 
 ### Frontend
