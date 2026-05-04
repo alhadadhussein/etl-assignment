@@ -21,8 +21,12 @@ jobs:
         run: npm ci
         working-directory: ./backend
 
-      - name: Run tests
+      - name: Run unit tests
         run: npm run test
+        working-directory: ./backend
+
+      - name: Run e2e tests
+        run: npm run test:e2e
         working-directory: ./backend
 
       - name: Build
