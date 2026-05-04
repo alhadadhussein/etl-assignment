@@ -20,6 +20,6 @@ jobs:
           app_location: "./frontend"
           output_location: "dist"
         env:
-          VITE_ENTRA_CLIENT_ID: ${{ secrets.VITE_ENTRA_CLIENT_ID }}
-          VITE_ENTRA_TENANT_ID: ${{ secrets.VITE_ENTRA_TENANT_ID }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_ENTRA_CLIENT_ID: ${{ vars.VITE_ENTRA_CLIENT_ID }}
+          VITE_ENTRA_TENANT_ID: ${{ vars.VITE_ENTRA_TENANT_ID }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
